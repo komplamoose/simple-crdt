@@ -31,8 +31,41 @@ export default class CRDT {
   localInsert(index: number, value: string) {
     const char = this.generateChar(index, value);
     this.struct.splice(index, 0, char);
-    // const inserted = new Char(, this.siteId, value);
+
+    // broadcast char
   }
+
+  localDelete(startIndex: number, endIndex: number) {
+    this.struct.splice(startIndex, endIndex - startIndex);
+  }
+
+  remoteInsert(char: Char) {
+    // binary?
+    const index = this.searchInsertIndex(char);
+    this.struct.splice(index, 0, char);
+    // TODO: posFromIndex => editor.replaceRange();
+  }
+
+  remoteDelete(char: Char) {
+    const index = this.searchDeleteIndex(char);
+    if (index === -1) {
+      return;
+    }
+    this.struct.splice(index, 1);
+    // TODO: posFromIndex => editor.replaceRange();
+  }
+
+  searchDeleteIndex(char: Char) {
+    return this.struct.findIndex(
+      (c) => JSON.stringify(c.index) === JSON.stringify(char.index)
+    );
+  }
+
+  searchInsertIndex(char: Char) {
+    const index = this.struct.findIndex((c) => c.index > char.index);
+    return index === -1 ? this.struct.length : index;
+  }
+
   /**
    * 1. 비어 있는 경우
    * 1-1. 처음 입력할 떄
@@ -88,9 +121,6 @@ export default class CRDT {
     return [...newIndex, ...mid.toString().split('.').map(Number)];
   }
 
-  localDelete() {}
-  remoteInsert() {}
-  remoteDelete() {}
   toString() {
     return this.struct.map((char) => char.value).join('');
   }
