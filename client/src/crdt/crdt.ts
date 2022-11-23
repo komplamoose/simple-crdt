@@ -92,6 +92,6 @@ export default class CRDT {
   remoteInsert() {}
   remoteDelete() {}
   toString() {
-    return JSON.stringify(this.struct.map((char) => char.value));
+    return this.struct.map((char) => char.value).join('');
   }
 }

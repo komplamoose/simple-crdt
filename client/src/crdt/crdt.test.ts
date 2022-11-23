@@ -4,6 +4,24 @@ describe('localInsert() Test:', () => {
   let crdt: CRDT;
   beforeEach(() => {
     crdt = new CRDT();
+    crdt.localInsert(0, 'A');
+    crdt.localInsert(1, 'B');
+    crdt.localInsert(2, 'C');
+  });
+
+  it('1. localInsert(0, "H") 테스트', () => {
+    crdt.localInsert(0, 'H');
+    expect(crdt.toString()).toEqual('HABC');
+  });
+
+  it('2. localInsert(3, "D") 테스트', () => {
+    crdt.localInsert(3, 'D');
+    expect(crdt.toString()).toEqual('ABCD');
+  });
+
+  it('3. localInsert(1, "F") 테스트', () => {
+    crdt.localInsert(1, 'F');
+    expect(crdt.toString()).toEqual('AFBC');
   });
 });
 
